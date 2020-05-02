@@ -1,0 +1,71 @@
+﻿<Window x:Class="TimeSeriesForecasting.Views.DBConnectionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TimeSeriesForecasting.Views"
+        xmlns:vm="clr-namespace:TimeSeriesForecasting.ViewModels"
+        mc:Ignorable="d"
+        Title="DBConnectionWindow" Width="350" Height="250">
+
+    <Window.DataContext>
+        <vm:DBConnectionWindowViewModel/>
+    </Window.DataContext>
+    <StackPanel>
+
+        <!-- <StackPanel Orientation="Horizontal"> 
+            <Label Margin="3" VerticalContentAlignment="Center" />
+            <TextBox Margin="3" VerticalContentAlignment="Center" x:Name="server_name" Text="dsd"/> 
+        </StackPanel>  -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="4*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Padding="5" Grid.ColumnSpan="2" TextWrapping="Wrap"
+                       Text="Для подключения к данным SQL Server укажите следующие параметры:" />
+
+            <Label Grid.Row="1" Grid.Column="0" Content="Имя сервера:" />
+            <TextBox Name="serverName" VerticalContentAlignment="Center" Grid.Row="1" Grid.Column="1" Margin="2" Text="{Binding DataSource, Mode=TwoWay}" ></TextBox>
+
+            <Label Grid.Row="2" Grid.Column="0" Content="База данных:" />
+            <TextBox VerticalContentAlignment="Center" Grid.Row="2" Grid.Column="1" Margin="2" x:Name="dbname" Text="{Binding InitialCatalog, Mode=TwoWay}" />
+
+
+            <Label Content="Name:" Grid.Row="3" Grid.Column="0" />
+            <TextBox VerticalContentAlignment="Center" Grid.Row="3" Grid.Column="1" Margin="2" x:Name="username" Text="{Binding UserID, Mode=TwoWay}" />
+
+
+            <Label Content="Pass:" Grid.Row="4" Grid.Column="0" />
+            <TextBox VerticalContentAlignment="Center" Grid.Row="4" Grid.Column="1" Margin="2" x:Name="password"
+                     Text="{Binding Password, Mode=TwoWay}" />
+
+        </Grid>
+        <!-- <RadioButton x:Name="radiobutton1" Content="Windows аутентификация" Checked="RadioButton_Checked"/> -->
+        <!-- <RadioButton x:Name="radiobutton2" Content="Sql server аутентификация" Checked="Radiobutton2_Checked"/> -->
+
+        <!-- <Label Content="Проверка подлинности:&#xD;&#xA;" />
+        <Viewbox x:Name="sql_authentication" Margin="42,73,71,9" Grid.Row="2" Stretch="Fill">
+            <Grid Height="48" Width="238">
+                <TextBox x:Name="username" HorizontalAlignment="Left" Height="23" Margin="87,0,0,0" Grid.Column="0" Grid.Row="2" TextWrapping="Wrap" Text="Aliya Sultanova" VerticalAlignment="Top" Width="151" Background="#FFFBF7F7" FontSize="14" BorderBrush="#FF534F4F" FontFamily="Times New Roman"/>
+                <TextBox x:Name="password" HorizontalAlignment="Left" Height="23" Margin="87,25,0,0" Grid.Column="0" Grid.Row="2" TextWrapping="Wrap" VerticalAlignment="Top" Width="151" Background="#FFFBF7F7" FontSize="14" BorderBrush="#FF534F4F" FontFamily="Times New Roman"/>
+                <Label Content="Пользователь:&#xA;" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Times New Roman" Height="38" Width="82"/>
+                <Label Content="Пароль:&#xA;" HorizontalAlignment="Left" Margin="0,21,0,0" VerticalAlignment="Top" FontFamily="Times New Roman" Height="27" Width="58"/>
+            </Grid>
+        </Viewbox> -->
+
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
+            <Button Content="Проверка" Background="WhiteSmoke" HorizontalAlignment="Center" Padding="5" Margin="5" Command="{Binding CheckConnection}" />
+            <Button Content="Соединить" Background="WhiteSmoke" HorizontalAlignment="Center" Padding="5" Margin="5" Command="{Binding CreateConnection}" />
+        </StackPanel>
+    </StackPanel>
+</Window>

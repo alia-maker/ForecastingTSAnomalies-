@@ -1,0 +1,20 @@
+﻿TimeSeriesForecasting
+
+
+winexe
+C#
+.cs
+D:\Visual Studio 2017\Projects\TimeSeriesForecasting\TimeSeriesForecasting\obj\Debug\
+TimeSeriesForecasting
+none
+false
+DEBUG;TRACE
+D:\Visual Studio 2017\Projects\TimeSeriesForecasting\TimeSeriesForecasting\App.xaml
+4250517781
+41209336
+252059434824
+142-89485005
+Views\DBConnectionWindow.xaml;Views\HoltWintersWindow.xaml;Views\MainWindow.xaml;Views\ObjectSelectionWindow.xaml;
+
+False
+
