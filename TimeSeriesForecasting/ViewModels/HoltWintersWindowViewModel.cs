@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -28,19 +29,24 @@ namespace TimeSeriesForecasting.ViewModels
         //        }).ToArray();
         //}
 
-        private IModel _model;
+        private HoltWintersModel _model;
         private DBContext _dbContext;
         public HoltWintersWindowViewModel() { }
-        public HoltWintersWindowViewModel(DBContext dbContext, IModel model )
+
+        public HoltWintersWindowViewModel(DBContext dbContext, HoltWintersModel model)
         {
             _model = model;
             _dbContext = dbContext;
-            NumberOfValue = 5;
+            NumberOfValues = 3;
+            ScalingFactor = (float)2;
             BuildHoltWintersModel = new RelayCommandParam<Window>(win =>
             {
                 _dbContext.TimeSeriesData.SeriesType = SeriesType.BuilderHoltWinters;
-                _model.Create(_dbContext.TimeSeriesData);
+                _dbContext.TimeSeriesData.NumberOfValue = NumberOfValues;
+                _dbContext.ScalingFactorHoltWinters = ScalingFactor;
                 win.Close();
+                _model.Create(_dbContext.TimeSeriesData);
+                //win.Close();
                 //open python script and send data there
             });
         }
@@ -49,10 +55,17 @@ namespace TimeSeriesForecasting.ViewModels
 
 
         private int _numberOfOvalue;
-        public int NumberOfValue
+        public int NumberOfValues
         {
             get => _numberOfOvalue;
             set => Set(ref _numberOfOvalue, value);
+        }
+
+        private float _scalingFactor;
+        public float ScalingFactor
+        {
+            get => _scalingFactor;
+            set => Set(ref _scalingFactor, value);
         }
 
         private IntervalTypesEnum _selectedIntervalType;
@@ -65,8 +78,7 @@ namespace TimeSeriesForecasting.ViewModels
 
     }
 
-
-[TypeConverter(typeof(EnumDescriptionExtractor))]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum IntervalTypesEnum
     {
         [Description("в час")]

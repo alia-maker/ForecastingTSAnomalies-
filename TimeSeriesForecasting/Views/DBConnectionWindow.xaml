@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:TimeSeriesForecasting.Views"
         xmlns:vm="clr-namespace:TimeSeriesForecasting.ViewModels"
         mc:Ignorable="d"
-        Title="DBConnectionWindow" Width="350" Height="250">
+        Title="Соединение с базой данных" Width="350" Height="250">
 
     <Window.DataContext>
         <vm:DBConnectionWindowViewModel/>
@@ -40,11 +40,11 @@
             <TextBox VerticalContentAlignment="Center" Grid.Row="2" Grid.Column="1" Margin="2" x:Name="dbname" Text="{Binding InitialCatalog, Mode=TwoWay}" />
 
 
-            <Label Content="Name:" Grid.Row="3" Grid.Column="0" />
+            <Label Content="Имя пользователя:" Grid.Row="3" Grid.Column="0" />
             <TextBox VerticalContentAlignment="Center" Grid.Row="3" Grid.Column="1" Margin="2" x:Name="username" Text="{Binding UserID, Mode=TwoWay}" />
 
 
-            <Label Content="Pass:" Grid.Row="4" Grid.Column="0" />
+            <Label Content="Пароль:" Grid.Row="4" Grid.Column="0" />
             <TextBox VerticalContentAlignment="Center" Grid.Row="4" Grid.Column="1" Margin="2" x:Name="password"
                      Text="{Binding Password, Mode=TwoWay}" />
 
@@ -63,7 +63,7 @@
         </Viewbox> -->
 
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15,0,0">
             <Button Content="Проверка" Background="WhiteSmoke" HorizontalAlignment="Center" Padding="5" Margin="5" Command="{Binding CheckConnection}" />
             <Button Content="Соединить" Background="WhiteSmoke" HorizontalAlignment="Center" Padding="5" Margin="5" Command="{Binding CreateConnection}" />
         </StackPanel>

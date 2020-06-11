@@ -9,7 +9,7 @@
         xmlns:vm="clr-namespace:TimeSeriesForecasting.ViewModels"
         Name="window"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Anomaly Detection" Height="450" Width="800">
     <Window.DataContext>
         <vm:MainWindowViewModel />
     </Window.DataContext>
@@ -24,24 +24,38 @@
             <CollectionViewSource x:Key="ИмяТаблицыViewSource" Source="{Binding ИмяТаблицы, Source={StaticResource ИмяБазыDataSet}}"/>
      </Window.Resources>-->
     <DockPanel>
-        <Menu DockPanel.Dock="Top" Grid.ColumnSpan="2">
-            <MenuItem Header="Данные">
+        <Menu DockPanel.Dock="Top" Grid.ColumnSpan="2" Height="22">
+            <MenuItem Header="Данные"  Height="22"  HorizontalContentAlignment="Center" VerticalAlignment="Center">
+                
                 <!--<MenuItem Header="Соединение с БД" Click="MenuItem_Click" />-->
-                <MenuItem Header="Соединение с БД" Command="{Binding DBConnectionWindowOpen}" />
+                <MenuItem Header="Соединение с БД" Command="{Binding DBConnectionWindowOpen}" 
+                          BorderThickness="1" />
                 <MenuItem Header="Выбор объекта" Command="{Binding ObjectSelectionWindowOpen}"/>
 
 
             </MenuItem>
-            <MenuItem Header="Модель">
+            <MenuItem Header="Модель" Height="22" >
                 <MenuItem Header="Создать">
-                    <MenuItem Header="Модель Уолта-Винтерса" Command="{Binding OpenHoltWintersWindow}" />
-                    <MenuItem Header="XGBoost" />
+                    <MenuItem Header="Модель Хольта-Винтерса" Command="{Binding OpenHoltWintersWindow}" />
+                    <MenuItem Header="XGBoost" Command="{Binding OpenXGBoostWindow}"/>
                 </MenuItem>
 
-                <MenuItem Header="Открыть" />
+                <MenuItem Header="Анализ"  >
+                    <MenuItem Header="Модель Хольта-Винтерса" Command="{Binding SearchAnomalyHoltWintersModel}" />
+                    <MenuItem Header="XGBoost" Command="{Binding SearchAnomalyXGBoostModel}" />
+                </MenuItem>
             </MenuItem>
 
-            <MenuItem Header="Настройки" VerticalAlignment="Center" />
+            <MenuItem Header="Настройки" VerticalAlignment="Center" HorizontalAlignment="Center" 
+                      Height="22" >
+                <MenuItem Header="Стиль">
+                    <MenuItem Header="Светлый" Command="{Binding SetLightColor}"/>
+                    <MenuItem Header="Серый" Command="{Binding SetGrayColor}"/>
+                    <MenuItem Header="Голубой" Command="{Binding SetBlueColor}"/>
+                    <MenuItem Header="Черный" Command="{Binding SetBlackColor}" />
+                </MenuItem>
+                <MenuItem Header="Отображение данных"/>
+            </MenuItem>
 
             <!--<Button Content="Кнопка в меню" />-->
         </Menu>
@@ -57,11 +71,13 @@
                 <RowDefinition Height="25" />
             </Grid.RowDefinitions>
             <!--<Label Name="ObjectName" Grid.Column="0" Grid.Row="0" Content="{Binding SelectedObject}" />-->
-            <DockPanel LastChildFill="True">
-                <TextBlock Margin="3" Text="{Binding SelectedObject}" TextAlignment="Center" DockPanel.Dock="Top" />
-                <DataGrid Margin="1" Name="_dataGrid" AutoGenerateColumns="True" 
+            <DockPanel LastChildFill="True" >
+                <TextBox Margin="0,0,1,0" Height="22" VerticalContentAlignment="Center" IsReadOnly="True" Text="{Binding SelectedObject}" TextAlignment="Center" DockPanel.Dock="Top" />
+                <DataGrid Margin="1" Name="DataGrid" AutoGenerateColumns="True" 
                           ItemsSource="{Binding TimeSeriesData}" 
-                          Grid.Column="0" Grid.Row="0"  BorderThickness="0" />
+                          Grid.Column="0" Grid.Row="0"  BorderThickness="0">
+                    
+                </DataGrid>
             </DockPanel>
             <!--<DataGrid Margin="5" Name="_dataGrid" Grid.Column="0" Grid.Row="0"  BorderThickness="0" />-->
 

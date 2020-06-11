@@ -40,13 +40,22 @@ namespace TimeSeriesForecasting
             services.AddTransient<DBConnectionWindowViewModel>();
             services.AddTransient<MainWindowViewModel>();
             services.AddTransient<ObjectSelectionWindowViewModel>();
+            services.AddTransient<ModelParamsSelectorVM<HoltWintersModelParams>>();
+            services.AddTransient<ModelParamsSelectorVM<XGBoostModelParams>>();
+
             services.AddTransient<HoltWintersWindowViewModel>();
+            services.AddTransient<XGBoostWindowViewModel>();
+            services.AddSingleton<HoltWintersModel>();
+            services.AddSingleton<XGBoostModel>();
+            services.AddTransient<IModelParamsReader, ModelParamsReader>();
             services.AddTransient<IFileWorker, JsonFileWorker>();
             services.AddTransient<IModel, HoltWintersModel>();
+            services.AddTransient<IModel, XGBoostModel>();
             // services
             //services.AddTransient<IMyCalculator, MyCalculator>();
             services.AddSingleton<ViewManager>(); // wanna have only one manager
             services.AddSingleton<DBContext>();
+            services.AddSingleton<PythonManager>();
             //// read external json configurations
             //var config = new ConfigurationBuilder()
             //    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)

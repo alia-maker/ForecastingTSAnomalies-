@@ -10,11 +10,11 @@ none
 false
 DEBUG;TRACE
 D:\Visual Studio 2017\Projects\TimeSeriesForecasting\TimeSeriesForecasting\App.xaml
-4250517781
+6-318363698
 41209336
-252059434824
-142-89485005
-Views\DBConnectionWindow.xaml;Views\HoltWintersWindow.xaml;Views\MainWindow.xaml;Views\ObjectSelectionWindow.xaml;
+32800217537
+143-643249358
+Views\DBConnectionWindow.xaml;Views\HoltWintersWindow.xaml;Views\MainWindow.xaml;Views\ModelParamsSelectorWindow.xaml;Views\ObjectSelectionWindow.xaml;Views\XGBoostWindow.xaml;
 
-False
+True
 

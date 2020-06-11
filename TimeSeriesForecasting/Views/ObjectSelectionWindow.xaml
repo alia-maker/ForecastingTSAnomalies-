@@ -3,46 +3,71 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:local="clr-namespace:TimeSeriesForecasting.Views"
         xmlns:vm="clr-namespace:TimeSeriesForecasting.ViewModels"
         x:Name="ImportWimdow"
         mc:Ignorable="d"
-        Title="Выбор объекта" Height="238" Width="365.444">
+        Title="Выбор объекта" Height="180" Width="410">
    
     <Window.DataContext>
         <vm:ObjectSelectionWindowViewModel />
     </Window.DataContext>
     
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding OnLoad}"
+                                   CommandParameter="{Binding ElementName=ImportWimdow}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    
     <Grid>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*" />
             <ColumnDefinition />
-            <ColumnDefinition />
-            <ColumnDefinition />
+            <ColumnDefinition Width="1*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="2*" />
-            <RowDefinition Height="1*" />
             <RowDefinition Height="2*" />
             <RowDefinition Height="2*" />
-            <RowDefinition Height="1*" />
-            <RowDefinition Height="1*" />
+            <RowDefinition Height="2*" />
+            <RowDefinition Height="*" />
+
         </Grid.RowDefinitions>
        
         <ComboBox IsEditable="True" x:Name="objectbox" ItemsSource="{Binding ObjectNames}" Margin="3,0,0,0" Grid.Row="1"
-                  Text="{Binding CurrentObjectName}" Grid.ColumnSpan="2" />
+                  Text="{Binding CurrentObjectName}" Grid.ColumnSpan="2" VerticalContentAlignment="Center"/>
         
-        <Button Content="Загрузить из БД" Margin="3,0,3,0" Background="WhiteSmoke" Grid.Row="1" Grid.Column="2"
-                Command="{Binding LoadObjects}" Height="23" VerticalAlignment="Bottom" />
+        <Button Name="LoadOblectsButton" Content="Загрузить из БД" Margin="3,1,3,1" 
+                Background="WhiteSmoke" Grid.Row="1" Grid.Column="2"
+                Command="{Binding LoadObjects}"    />
 
-        <Label Content="Имя объекта:" HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Row="0" />
-        <Label Content="Начало:" VerticalAlignment="Bottom" Grid.Row="2" Grid.Column="0" />
-        <DatePicker Name="_begin" BorderThickness="0" Grid.Row="3" Grid.Column="0" />
-        <Label Content="Конец:" VerticalAlignment="Bottom" Grid.Row="2" Grid.Column="2" />
-        <DatePicker Name="_end" BorderThickness="0" Grid.Row="3" Grid.Column="2" />
-        <Button Name="dataLoad" Content="Выбрать" Background="WhiteSmoke" Grid.Row="4" Grid.Column="1" 
-                Command="{Binding LoadObjectData}" 
+        <Label Content="Имя объекта:" HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Row="0" TextBlock.FontSize="12" />
+        <Label Content="Временной интервал" VerticalAlignment="Bottom" Grid.Row="2" Grid.Column="0" />
+
+
+        <StackPanel Orientation="Horizontal"  Margin="0,1,0,0" Grid.Row ="3" Grid.ColumnSpan="2">
+            <DatePicker BorderThickness="1" Grid.Row="3" Grid.Column="0" 
+                    SelectedDate="{Binding Begin, Mode=TwoWay}"
+                    DisplayDate="{Binding DateTime.Now}" Margin="3" />
+            <DatePicker Name="_end" BorderThickness="1" Grid.Row="3" Grid.Column="2" Margin="3"
+                    SelectedDate="{Binding End, Mode=TwoWay}"
+                    DisplayDate="{Binding DateTime.Now}"/>
+           
+        </StackPanel>
+        <Button Name="LoadDataObjectButton" Content="Выбрать" Background="WhiteSmoke" Grid.Row="3" Grid.Column="2" 
+                Command="{Binding LoadObjectData}" Margin="3,1,3,1"  
                 CommandParameter="{Binding ElementName=ImportWimdow}"
                 />
+        <!--<DatePicker BorderThickness="1" Grid.Row="3" Grid.Column="0" 
+                    SelectedDate="{Binding Begin, Mode=TwoWay}"
+                    DisplayDate="{Binding DateTime.Now}" Margin="2" />-->
+        <Label Content="" VerticalAlignment="Bottom" Grid.Row="2" Grid.Column="2" />
+        <!--<DatePicker Name="_end" BorderThickness="1" Grid.Row="3" Grid.Column="2" Margin="3"
+                    SelectedDate="{Binding End, Mode=TwoWay}"
+                    DisplayDate="{Binding DateTime.Now}"/>-->
+       
 
     </Grid>
 </Window>

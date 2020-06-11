@@ -49,6 +49,9 @@
     <Reference Include="Microsoft.Xaml.Behaviors, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Xaml.Behaviors.Wpf.1.1.19\lib\net45\Microsoft.Xaml.Behaviors.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="runtime.osx.10.10-x64.CoreCompat.System.Drawing, Version=5.8.64.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\runtime.osx.10.10-x64.CoreCompat.System.Drawing.5.8.64\lib\netstandard2.0\runtime.osx.10.10-x64.CoreCompat.System.Drawing.dll</HintPath>
     </Reference>
@@ -125,17 +128,28 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DataAnalysis.cs" />
     <Compile Include="HelpersLibrary\EnumDescriptionExtractor.cs" />
     <Compile Include="ModelBuilding\HoltWintersModel.cs" />
+    <Compile Include="ModelBuilding\IModelParamsReader.cs" />
     <Compile Include="ModelBuilding\Model.cs" />
+    <Compile Include="ModelBuilding\XGBoostModel.cs" />
     <Compile Include="PythonManager.cs" />
     <Compile Include="ViewModels\HoltWintersWindowViewModel.cs" />
+    <Compile Include="ViewModels\ModelParamsSelectorVM.cs" />
     <Compile Include="ViewModels\ObjectSelectionWindowViewModel.cs" />
+    <Compile Include="ViewModels\XGBoostWindowViewModel.cs" />
     <Compile Include="Views\HoltWintersWindow.xaml.cs">
       <DependentUpon>HoltWintersWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ModelParamsSelectorWindow.xaml.cs">
+      <DependentUpon>ModelParamsSelectorWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ObjectSelectionWindow.xaml.cs">
       <DependentUpon>ObjectSelectionWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\XGBoostWindow.xaml.cs">
+      <DependentUpon>XGBoostWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="Views\DBConnectionWindow.xaml">
       <SubType>Designer</SubType>
@@ -171,7 +185,15 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\ModelParamsSelectorWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ObjectSelectionWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\XGBoostWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

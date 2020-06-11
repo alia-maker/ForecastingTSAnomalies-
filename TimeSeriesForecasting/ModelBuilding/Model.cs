@@ -9,6 +9,6 @@ namespace TimeSeriesForecasting.ModelBuilding
     public interface IModel
     {
         void Create(TimeSeriesData data);
-        void Forecast(TimeSeriesData data);
+        Task<PlotData> Forecast();
     }
 }

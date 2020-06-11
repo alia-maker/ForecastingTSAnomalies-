@@ -7,15 +7,21 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using TimeSeriesForecasting.HelpersLibrary;
+using TimeSeriesForecasting.ModelBuilding;
 //using MessageBox = Xceed.Wpf.Toolkit.MessageBox;
 
 namespace TimeSeriesForecasting.DataBase
 {
+    public enum TypeModelEnum  
+    {
+        HoltWinters,
+        XGBoost,
+    }
     public class DBContext : IDisposable
     {
         private SqlConnection _connection;
 
-        public string SelectedObject { get; set; }
+        public string SelectedObject { get; set; } = "S01N95169U001N01D0035N01PAI____PI00";
 
         public event Action ONConnectionStatusChanged;
 
@@ -23,8 +29,10 @@ namespace TimeSeriesForecasting.DataBase
 
         public event Action OnDataObjectLoaded;
 
-
-
+        public event Action OnObjectNamesLoaded;
+        public event Action OnRequestExecution;
+        public event Action OnRequestCompleted;
+       // public event Action OnPlotDataChanged;
 
         private static readonly string _fileName = "ConnectionInfo.json";
         IFileWorker _fileWorker;
@@ -37,10 +45,12 @@ namespace TimeSeriesForecasting.DataBase
             MessageBox.Show(ConnectionStatus);
         }
 
+        public float ScalingFactorHoltWinters { get; set; } = (float)2.1;
+        public float ScalingFactorXGBoost { get; set; } = (float)1.5;
 
         public void CreateConnection(DBConnectionInfo _connectionInfo)
         {
-            _fileWorker.Save(_connectionInfo, _fileName);
+            _fileWorker.Save(_connectionInfo, _fileName, "");
             ConnectionStatus = "";
             _tryConnect(_connectionInfo);
             MessageBox.Show(ConnectionStatus);
@@ -62,7 +72,7 @@ namespace TimeSeriesForecasting.DataBase
             if (File.Exists(connectPath))
             {
                 ConnectionStatus = "";
-                _connectionInfo = _fileWorker.Read<DBConnectionInfo>(_fileName);
+                _connectionInfo = _fileWorker.Read<DBConnectionInfo>(_fileName, "");
                 _openDBConnection(_connectionInfo);
 
             }
@@ -83,17 +93,14 @@ namespace TimeSeriesForecasting.DataBase
 
 
 
-        // private string _checkConnectionStatus;
-        //public string CheckConnectionStatus
-        //{
-        //    get => _checkConnectionStatus;
-        //    set => _checkConnectionStatus = value;
-        //} 
+      
         private string _connectionStatus;
         public string ConnectionStatus
         {
             get => _connectionStatus;
             set => _connectionStatus = value;
+
+
         }
 
         private void _openDBConnection(DBConnectionInfo _connectionInfo)
@@ -105,6 +112,7 @@ namespace TimeSeriesForecasting.DataBase
                 IntegratedSecurity = false,
                 Password = _connectionInfo.Password,
                 InitialCatalog = _connectionInfo.InitialCatalog,
+                MultipleActiveResultSets = true,
 
             };
 
@@ -127,33 +135,33 @@ namespace TimeSeriesForecasting.DataBase
 
         public void Dispose()
         {
-            _fileWorker.Save(_objectNames, "fdsfsd");
+            //_fileWorker.Save(ObjectNames, "fdsfsd");
             _connection?.Dispose();
         }
 
-        private List<string> _objectNames = new List<string>();
+      //  private List<string> _objectNames = new List<string>();
 
         public List<string> ObjectNames
         {
-            get => _objectNames;
-        }
+            get;
+        } = new List<string>();
 
         public async Task<List<string>> LoadObjectsAsync()
         {
+            ConnectionStatus = "Загрузка объектов из БД...";
+            ONConnectionStatusChanged?.Invoke();
+            OnRequestExecution?.Invoke();
             try
             {
-                //if (_objectNames.Count==0)
-                // {
-                //_objectNames = new List<string>();
-
                 var sql = " SELECT DISTINCT Ev_Info FROM SEICDatabase.dbo.SEICEVENTHISTORY" +
                           " WHERE right(Ev_Info,5) = '_PI00' ";
+                ObjectNames.Clear();
                 using (var command = new SqlCommand(sql, _connection))
                 {
                     command.CommandTimeout = 1000;
                     using (var reader = await command.ExecuteReaderAsync())
                     {
-                        while (await reader.ReadAsync()) _objectNames.Add(reader.GetString(0));
+                        while (await reader.ReadAsync()) ObjectNames.Add(reader.GetString(0));
                     }
                 }
 
@@ -168,34 +176,43 @@ namespace TimeSeriesForecasting.DataBase
             {
                 MessageBox.Show(exc.ToString());
             }
-
-            return _objectNames;
+            ConnectionStatus = "Загрузка объектов завершена";
+            ONConnectionStatusChanged?.Invoke();
+            OnObjectNamesLoaded?.Invoke();
+            OnRequestCompleted?.Invoke();
+            return ObjectNames;
         }
         //S01N25020U001N01D0035N01PAI____PI00
-        private TimeSeriesData _timeSeriesData = new TimeSeriesData();
+        //private TimeSeriesData _timeSeriesData = new TimeSeriesData();
         public TimeSeriesData TimeSeriesData
         {
-            get => _timeSeriesData;
-        }
-        public async Task<TimeSeriesData> LoadObjectDataAsync(string objectName)
+            get;
+        } = new TimeSeriesData();
+        public async Task<TimeSeriesData> LoadObjectDataAsync(string objectName, DateTime start, DateTime end)
         {
             SelectedObject = objectName;
             OnSelectedObjectChanged();
             try
             {
-                var sql = " SELECT DBTimeStamp, Value FROM SEICDatabase.dbo.SEICEVENTHISTORY WHERE Ev_Info = @param;";
+                var sql = " SELECT DBTimeStamp, Value FROM SEICDatabase.dbo.SEICEVENTHISTORY WHERE Ev_Info = @param" +
+                    " and DBTimeStamp > @start and DBTimeStamp < @end";
+
                 using (var command = new SqlCommand(sql, _connection))
                 {
                     command.Parameters.AddWithValue("@param", objectName);
+                    command.Parameters.AddWithValue("@start", start);
+                    command.Parameters.AddWithValue("@end", end);
                     command.CommandTimeout = 1000;
-                    var date = new List<DateTime>();
-                    var values = new List<float>();
+                    //var date = new List<DateTime>();
+                    // var values = new List<float>();
+                    TimeSeriesData.Points.Clear();
                     using (SqlDataReader reader = await command.ExecuteReaderAsync())
                     {
+                        TimeSeriesData.Name = objectName;
                         while (reader.Read())
                         {
 
-                            _timeSeriesData.Points.Add(new Point(reader.GetDateTime(0), reader.GetFloat(1)));
+                            TimeSeriesData.Points.Add(new Point(reader.GetDateTime(0), reader.GetFloat(1)));
 
                             // values.Add(reader.GetFloat(1));
                         }
@@ -208,8 +225,14 @@ namespace TimeSeriesForecasting.DataBase
             }
             //_timeSeriesData.SeriesType = 0;
             OnDataObjectLoaded?.Invoke();
-            return _timeSeriesData;
+            return TimeSeriesData;
 
+        }
+
+        public MyClassDto PlotData
+        {
+            get;
+            set;
         }
     }
 }

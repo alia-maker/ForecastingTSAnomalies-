@@ -169,3 +169,9 @@ D:\Visual Studio 2017\Projects\TimeSeriesForecasting\TimeSeriesForecasting\bin\D
 D:\Visual Studio 2017\Projects\TimeSeriesForecasting\TimeSeriesForecasting\bin\Debug\ZeroMQ.dll
 D:\Visual Studio 2017\Projects\TimeSeriesForecasting\TimeSeriesForecasting\bin\Debug\ZeroMQ.xml
 D:\Visual Studio 2017\Projects\TimeSeriesForecasting\TimeSeriesForecasting\obj\Debug\TimeSeriesForecasting_Content.g.cs
+D:\Visual Studio 2017\Projects\TimeSeriesForecasting\TimeSeriesForecasting\bin\Debug\Newtonsoft.Json.dll
+D:\Visual Studio 2017\Projects\TimeSeriesForecasting\TimeSeriesForecasting\bin\Debug\Newtonsoft.Json.xml
+D:\Visual Studio 2017\Projects\TimeSeriesForecasting\TimeSeriesForecasting\obj\Debug\Views\XGBoostWindow.g.cs
+D:\Visual Studio 2017\Projects\TimeSeriesForecasting\TimeSeriesForecasting\obj\Debug\Views\XGBoostWindow.baml
+D:\Visual Studio 2017\Projects\TimeSeriesForecasting\TimeSeriesForecasting\obj\Debug\Views\ModelParamsSelectorWindow.g.cs
+D:\Visual Studio 2017\Projects\TimeSeriesForecasting\TimeSeriesForecasting\obj\Debug\Views\ModelParamsSelectorWindow.baml

@@ -1,0 +1,1 @@
+{"Deviation":1.0872055,"ModelPath":"S01N00413U001N01D0035N01PAI____PI00_bst_model_2020-06-04_22:51.json"}

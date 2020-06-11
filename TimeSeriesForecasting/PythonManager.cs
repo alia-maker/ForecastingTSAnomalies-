@@ -7,18 +7,20 @@ using ZeroMQ;
 using System.Text.Json;
 using System.Windows;
 using TimeSeriesForecasting.HelpersLibrary;
+using System.IO;
+using System.Diagnostics;
 
 namespace TimeSeriesForecasting
 {
     public class PythonManager : IDisposable
     {
         private ZSocket _requester;
-
+        public Process Process;
         public PythonManager()
         {
             try
             {
-                _requester = new ZSocket(ZSocketType.REQ);
+                _requester = new ZSocket(ZSocketType.PAIR);
                 _requester.Connect("tcp://127.0.0.1:5555");
             }
             catch (Exception ex)
@@ -28,19 +30,22 @@ namespace TimeSeriesForecasting
         }
         public void Send<T>(T obj)
         {
-            JsonFileWorker file_Creater = new JsonFileWorker();
-            file_Creater.Save<T>(obj, "file2python.json");
+           // JsonFileWorker file_Creater = new JsonFileWorker();
+            //file_Creater.Save<T>(obj, "file2python.json");
             string json = JsonSerializer.Serialize(obj);
+            
             _requester.SendFrame(new ZFrame(json));
         }
 
-        public T Receive<T>()
+        public Task<T> Receive<T>()
         {
             using (var reply = _requester.ReceiveFrame())
             {
                 var json = reply.ReadString();
+
+                //File.WriteAllText("pythondata.txt", json);
                 var obj = JsonSerializer.Deserialize<T>(json);
-                return obj;
+                return Task.FromResult(obj);
             }
         }
         public void Dispose()
