@@ -100,10 +100,10 @@ namespace TimeSeriesForecasting.ViewModels
         public DBConnectionWindowViewModel() { }
         public DBConnectionWindowViewModel(DBContext dBContext, IFileWorker fileWorker)
         {
-            //DataSource = "DESKTOP-SSLIKJH";
-            //UserID = "sa";
-            //Password = "1";
-            //InitialCatalog = "SEICDatabase";
+            DataSource = "DESKTOP-SSLIKJH";
+            UserID = "sa";
+            Password = "1";
+            InitialCatalog = "SEICDatabase";
             _dbContext = dBContext;
             _fileWorker = fileWorker;
             ReadFileData();
