@@ -22,7 +22,7 @@ namespace TimeSeriesForecasting.ViewModels
         public string CurrentObjectName
         {
             get => _currentObjectName;
-            set => Set(ref _currentObjectName, value);
+            set => Set(ref _currentObjectName, value.Trim());
         }
         private DateTime _begin = DateTime.Parse("01.01.2020");
         public DateTime Begin
@@ -51,7 +51,7 @@ namespace TimeSeriesForecasting.ViewModels
 
             //GetObjectNames = new RelayCommand(async x => ObjectNames = await _dBContext.LoadObjectsAsync());
            // _dBContext.OnDataObjectLoaded += CloseWindow;
-            LoadObjects = new RelayCommand(async x => ObjectNames = await _dBContext.LoadObjectsAsync());
+            LoadObjects = new RelayCommand(async x => await _dBContext.LoadObjectsAsync());
             _dBContext.OnObjectNamesLoaded += SelectedObjectChanged;
             LoadObjectData = new RelayCommandParam<Window>(async win =>
             {
@@ -59,19 +59,6 @@ namespace TimeSeriesForecasting.ViewModels
                 await _dBContext.LoadObjectDataAsync(CurrentObjectName, Begin, End);
                // _dBContext.SelectedObject = CurrentObjectName;
             });
-
-            
-
-            //DetectAnomaly = new RelayCommandParam<Window>(win =>
-            //{
-            //    win.DialogResult = true;
-            //    win.Close();
-            //});
-            //CloseWindow = new RelayCommandParam<Window>(win =>
-            //{
-            //    win.DialogResult = false;
-            //    win.Close();
-            //});
 
         }
         
@@ -99,6 +86,7 @@ namespace TimeSeriesForecasting.ViewModels
         {
             _loadObjectsButton.IsEnabled = true;
             _loadDataObjectButton.IsEnabled = true;
+            ObjectNames = _dBContext.ObjectNames;
         }
 
         private void SelectedObjectChanged()

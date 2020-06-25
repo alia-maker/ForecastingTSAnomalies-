@@ -175,3 +175,5 @@ D:\Visual Studio 2017\Projects\TimeSeriesForecasting\TimeSeriesForecasting\obj\D
 D:\Visual Studio 2017\Projects\TimeSeriesForecasting\TimeSeriesForecasting\obj\Debug\Views\XGBoostWindow.baml
 D:\Visual Studio 2017\Projects\TimeSeriesForecasting\TimeSeriesForecasting\obj\Debug\Views\ModelParamsSelectorWindow.g.cs
 D:\Visual Studio 2017\Projects\TimeSeriesForecasting\TimeSeriesForecasting\obj\Debug\Views\ModelParamsSelectorWindow.baml
+D:\Visual Studio 2017\Projects\TimeSeriesForecasting\TimeSeriesForecasting\obj\Debug\Views\ModelParamsHWSelectorWindow.g.cs
+D:\Visual Studio 2017\Projects\TimeSeriesForecasting\TimeSeriesForecasting\obj\Debug\Views\ModelParamsHWSelectorWindow.baml

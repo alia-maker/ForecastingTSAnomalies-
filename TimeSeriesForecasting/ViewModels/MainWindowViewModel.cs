@@ -43,10 +43,12 @@ namespace TimeSeriesForecasting.ViewModels
             _dbContext.ONConnectionStatusChanged += ChangedStatus;
             _xgbmodel = xmodel;
             _xgbmodel.ONConnectionStatusChanged += ChangedStatus;
+            _hwmodel = hmodel;
+            _hwmodel.ONConnectionStatusChanged += ChangedStatus;
             _dbContext.OnSelectedObjectChanged += SelectedObjectChanged;
             _dbContext.OnDataObjectLoaded += DataObjectChanged;
             StatusMessage = _dbContext.ConnectionStatus;
-            SelectedObject = _dbContext.SelectedObject;
+            //SelectedObject = _dbContext.SelectedObject;
             
             //CreateConnectWithDatabase = new RelayCommand(x => DBContext = new DBContext());
         }
@@ -124,8 +126,8 @@ namespace TimeSeriesForecasting.ViewModels
                 var Values = temp.Select(row => row.y).ToArray();
 
                 _plotter.plt.Clear();
-                _plotter.plt.PlotScatter(xDate, Values);
-
+                _plotter.plt.PlotScatter(xDate, Values, label: "Данные");
+               
                 _plotter.plt.Ticks(dateTimeX: true);
 
                 _plotter.plt.YLabel("Pressure");
@@ -136,7 +138,7 @@ namespace TimeSeriesForecasting.ViewModels
                 //        //wpfPlot1.dsadas
                 //        break;
                 //}
-
+                _plotter.plt.Legend();
                 _plotter.Render();
             }
             else
@@ -202,7 +204,8 @@ namespace TimeSeriesForecasting.ViewModels
         public ICommand SearchAnomalyHoltWintersModel => new RelayCommand(async () =>
         {
             //_dbContext.TimeSeriesData.SeriesType = SeriesType.ForecastingHoltWinters;
-            _plotData = await _hwmodel.Forecast( );
+            _plotData = await _hwmodel.Forecast();
+          
             PlotDataChanged();
         });
         public ICommand OpenXGBoostWindow => new RelayCommand(() =>
@@ -219,44 +222,48 @@ namespace TimeSeriesForecasting.ViewModels
         });
         private void PlotDataChanged()
         {
-            if (_plotData!=null)
+            if (_plotData.Data != null)
             {
-                _plotter.plt.Clear();
-                _plotter.plt.YLabel("Pressure");
+                //if (_plotData.Data.Count > 0)
+                //{
+                    _plotter.plt.Clear();
+                    _plotter.plt.YLabel("Pressure");
 
 
-                var xDate = _plotData.Data.Select(x => x.Datetime.ToOADate()).ToArray();
-                var Values = _plotData.Data.Select(x => (Double)x.Real).ToArray();
-                _plotter.plt.PlotScatter(xDate, Values, label: "Реальные данные");
+                    var xDate = _plotData.Data.Select(x => x.Datetime.ToOADate()).ToArray();
+                    var Values = _plotData.Data.Select(x => (Double)x.Real).ToArray();
+                    _plotter.plt.PlotScatter(xDate, Values, label: "Данные");
 
-                var mValues = _plotData.Data.Select(x => (Double)x.Model).ToArray();
-                _plotter.plt.PlotScatter(xDate, mValues, label: "Модель");
+                    var mValues = _plotData.Data.Select(x => (Double)x.Model).ToArray();
+                    _plotter.plt.PlotScatter(xDate, mValues, label: "Модель");
 
-                var upValues = _plotData.Data.Select(x => (Double)x.UpperBond).ToArray();
-                _plotter.plt.PlotScatter(xDate, upValues, color: Color.Orange, lineWidth: 1, markerSize: 0, 
-                    lineStyle: LineStyle.DashDot,
-                    label: "Верхняя граница");
+                    var upValues = _plotData.Data.Select(x => (Double)x.UpperBond).ToArray();
+                    _plotter.plt.PlotScatter(xDate, upValues, color: Color.Orange, lineWidth: 1, markerSize: 0,
+                        lineStyle: LineStyle.DashDot
+                        );
 
-                var lValues = _plotData.Data.Select(x => (Double)x.LowerBond).ToArray();
-                _plotter.plt.PlotScatter(xDate, lValues, color: Color.Orange, lineWidth: 1, markerSize: 0, 
-                    lineStyle: LineStyle.DashDot, label: "Нижняя граница");
+                    var lValues = _plotData.Data.Select(x => (Double)x.LowerBond).ToArray();
+                    _plotter.plt.PlotScatter(xDate, lValues, color: Color.Orange, lineWidth: 1, markerSize: 0,
+                        lineStyle: LineStyle.DashDot, label: "Нижний/верхний порог");
 
-                _plotter.plt.PlotFill(xDate, lValues, xDate, upValues, fillAlpha: .5);
+                    _plotter.plt.PlotFill(xDate, lValues, xDate, upValues, fillAlpha: .5);
 
-                var anomaly = _createAnimalyPoints();
-                var aDate = anomaly.Select(x => x.Date.ToOADate()).ToArray();
-                var aValues = anomaly.Select(x => (Double)x.Value).ToArray();
-                _plotter.plt.PlotScatter(aDate, aValues, color: Color.Red, lineWidth: 0);
+                    var anomaly = _createAnimalyPoints();
+                    var aDate = anomaly.Select(x => x.Date.ToOADate()).ToArray();
+                    var aValues = anomaly.Select(x => (Double)x.Value).ToArray();
+                    _plotter.plt.PlotScatter(aDate, aValues, color: Color.Red, lineWidth: 0, label: "Anomaly");
 
-                _plotter.plt.Ticks(dateTimeX: true);
+                    _plotter.plt.Ticks(dateTimeX: true);
+                _plotter.plt.Legend();
 
                 _plotter.Render();
+              //  }
             }
-            else
-            {
-                _plotter.plt.Clear();
-                _plotter.Render();
-            }
+            //else
+            //{
+            //    _plotter.plt.Clear();
+            //    _plotter.Render();
+            //}
         }
         private List<Point> _createAnimalyPoints()
         {

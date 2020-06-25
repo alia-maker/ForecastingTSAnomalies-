@@ -42,8 +42,9 @@ namespace TimeSeriesForecasting.ViewModels
             BuildHoltWintersModel = new RelayCommandParam<Window>(win =>
             {
                 _dbContext.TimeSeriesData.SeriesType = SeriesType.BuilderHoltWinters;
-                _dbContext.TimeSeriesData.NumberOfValue = NumberOfValues;
+                _dbContext.TimeSeriesData.NumberOfValues = NumberOfValues;
                 _dbContext.ScalingFactorHoltWinters = ScalingFactor;
+                _dbContext.TimeSeriesData.IntervalType = SelectedIntervalType;
                 win.Close();
                 _model.Create(_dbContext.TimeSeriesData);
                 //win.Close();
@@ -78,7 +79,7 @@ namespace TimeSeriesForecasting.ViewModels
 
     }
 
-    [JsonConverter(typeof(JsonStringEnumConverter))]
+    [TypeConverter(typeof(EnumDescriptionExtractor))]
     public enum IntervalTypesEnum
     {
         [Description("в час")]

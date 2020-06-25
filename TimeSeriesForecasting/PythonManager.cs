@@ -42,8 +42,6 @@ namespace TimeSeriesForecasting
             using (var reply = _requester.ReceiveFrame())
             {
                 var json = reply.ReadString();
-
-                //File.WriteAllText("pythondata.txt", json);
                 var obj = JsonSerializer.Deserialize<T>(json);
                 return Task.FromResult(obj);
             }

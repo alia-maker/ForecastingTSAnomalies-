@@ -34,11 +34,20 @@ namespace TimeSeriesForecasting.ViewModels
             BuildXGBoostModel = new RelayCommandParam<Window>(win =>
             {
                 _dbContext.TimeSeriesData.SeriesType = SeriesType.BuilderXGBoost;
-                _dbContext.TimeSeriesData.NumberOfValue = NumberOfValues;
+                _dbContext.TimeSeriesData.NumberOfValues = NumberOfValues;
+                _dbContext.TimeSeriesData.IntervalType = SelectedIntervalType;
                 win.Close();
                 _model.Create(_dbContext.TimeSeriesData);
                 //win.Close();
             });
+        }
+
+        private IntervalTypesEnum _selectedIntervalType;
+
+        public IntervalTypesEnum SelectedIntervalType
+        {
+            get => _selectedIntervalType;
+            set => Set(ref _selectedIntervalType, value);
         }
     }
 }

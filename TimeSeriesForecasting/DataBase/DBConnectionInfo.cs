@@ -14,5 +14,11 @@ namespace TimeSeriesForecasting.DataBase
         public string Password { get; set; }
         public string InitialCatalog { get; set; }
         public string Tablename { get; set; }
+        public string ColumnTag { get; set; }
+        public string ColumnTimestamp { get; set; }
+        public string ColumnValue { get; set; }
+
+
+
     }
 }

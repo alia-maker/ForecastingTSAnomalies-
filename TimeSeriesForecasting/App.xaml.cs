@@ -40,9 +40,9 @@ namespace TimeSeriesForecasting
             services.AddTransient<DBConnectionWindowViewModel>();
             services.AddTransient<MainWindowViewModel>();
             services.AddTransient<ObjectSelectionWindowViewModel>();
-            services.AddTransient<ModelParamsSelectorVM<HoltWintersModelParams>>();
-            services.AddTransient<ModelParamsSelectorVM<XGBoostModelParams>>();
-
+            services.AddTransient<ModelParamsSelectorVM>();
+            services.AddTransient<ModelParamsHWSelectorVM>();
+            
             services.AddTransient<HoltWintersWindowViewModel>();
             services.AddTransient<XGBoostWindowViewModel>();
             services.AddSingleton<HoltWintersModel>();

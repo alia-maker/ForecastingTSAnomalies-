@@ -8,7 +8,8 @@ namespace TimeSeriesForecasting.HelpersLibrary
 {
     public interface IFileWorker
     {
-        void Save<T>(T obj, string fileName, string TypeModel="");
+        void Save<T>(T obj, string fileName);
         T Read<T>(string fileName, string TypeModel);
+        void CheckingFolder(string folder);
     }
 }

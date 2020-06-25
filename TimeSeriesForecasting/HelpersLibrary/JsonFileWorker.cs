@@ -13,33 +13,44 @@ namespace TimeSeriesForecasting.HelpersLibrary
     {
         public JsonFileWorker() { }
 
-        public void Save<T>(T obj, string filePath, string TypeModel = "")
+        public void Save<T>(T obj, string filePath)
         {
             var path_string = filePath;
-            if (TypeModel != "")
-            {
-                string fullPath1 = Path.Combine(Directory.GetCurrentDirectory(), "Models");
-                DirectoryInfo dirInfo1 = new DirectoryInfo(fullPath1);
-                if (!dirInfo1.Exists)
-                {
-                    dirInfo1.Create();
-                }
+            //if (TypeModel != "")
+            //{
+            //    string fullPath1 = Path.Combine(Directory.GetCurrentDirectory(), "Models");
+            //    DirectoryInfo dirInfo1 = new DirectoryInfo(fullPath1);
+            //    if (!dirInfo1.Exists)
+            //    {
+            //        dirInfo1.Create();
+            //    }
 
 
-                string fullPath = Path.Combine(Directory.GetCurrentDirectory(), "Models", TypeModel);
-                DirectoryInfo dirInfo = new DirectoryInfo(fullPath);
-                if (!dirInfo.Exists)
-                {
-                    dirInfo.Create();
-                }
-                path_string = Path.Combine(fullPath, filePath);
-            }
+            //    string fullPath = Path.Combine(Directory.GetCurrentDirectory(), "Models", TypeModel);
+            //    DirectoryInfo dirInfo = new DirectoryInfo(fullPath);
+            //    if (!dirInfo.Exists)
+            //    {
+            //        dirInfo.Create();
+            //    }
+            //    path_string = Path.Combine(fullPath, filePath);
+            //}
 
-            if(!Directory.Exists(Path.GetDirectoryName(path_string)))
-                Directory.CreateDirectory(Path.GetDirectoryName(path_string));
+           // if(!Directory.Exists(Path.GetDirectoryName(path_string)))
+             //   Directory.CreateDirectory(Path.GetDirectoryName(path_string));
 
             string jsonString = JsonSerializer.Serialize<T>(obj);
             File.WriteAllText(path_string, jsonString);
+        }
+
+
+        public void CheckingFolder(string folder)
+        {
+            
+            DirectoryInfo dirInfo1 = new DirectoryInfo(folder);
+            if (!dirInfo1.Exists)
+            {
+                dirInfo1.Create();
+            }
         }
 
         public T Read<T>(string fileName, string TypeModel)

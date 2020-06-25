@@ -7,7 +7,7 @@
         xmlns:vm="clr-namespace:TimeSeriesForecasting.ViewModels"
         x:Name="HoltWintersModel"
         mc:Ignorable="d"
-        Title="Модель Хольта-Винтерса" Height="200" Width="340">
+        Title="Модель Хольта-Винтерса" Height="180" Width="340">
     <Window.DataContext>
         <vm:HoltWintersWindowViewModel/>
     </Window.DataContext>
@@ -17,7 +17,7 @@
             <RowDefinition Height="2*"/>
             <RowDefinition Height="2*"/>
             <RowDefinition Height="2*"/>
-            <RowDefinition Height="2*"/>
+           
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -28,8 +28,8 @@
         </Grid.ColumnDefinitions>
         <Label Content="Нормализация данных" Background="WhiteSmoke" VerticalAlignment="Center"  Grid.Row="0" Grid.ColumnSpan="4" Height="26" />
         <TextBox Name="number_values" VerticalContentAlignment="Center"  Grid.Row="1" Grid.Column="1" Margin="7,1,7,1" Height="21"  Text="{Binding NumberOfValues}" VerticalAlignment="Center" />
-        <TextBox   Grid.Row="2" Grid.Column="1" Margin="7,1,7,1" Height="21"  Text="{Binding ScalingFactor}" VerticalAlignment="Center" />
-        <Label Content="Коэффициент отклонения:" Grid.Row="2" VerticalContentAlignment="Center" Grid.Column="0"/>
+        <!--<TextBox   Grid.Row="2" Grid.Column="1" Margin="7,1,7,1" Height="21"  Text="{Binding ScalingFactor}" VerticalAlignment="Center" />-->
+        <!--<Label Content="Коэффициент отклонения:" Grid.Row="2" VerticalContentAlignment="Center" Grid.Column="0"/>-->
         <Label Content="Количество значений:" VerticalAlignment="Center" Grid.Column="0"    Grid.Row="1" TextOptions.TextFormattingMode="Ideal" />
         <ComboBox Background="WhiteSmoke" Margin="1" Grid.Row="1"   Grid.Column="2" VerticalAlignment="Center"
          ItemsSource="{Binding AllIntervalValues}"
@@ -37,8 +37,8 @@
 
 
         <CheckBox Content="Заполнить пропущенные значения" Margin="7,0,0,0" VerticalAlignment="Center" 
-                  Grid.Row="3" Grid.ColumnSpan="4" Height="14" IsChecked="True" Command="{Binding ShowWarning}" />
-        <Button IsDefault="True" Content="Построить модель" Background="WhiteSmoke" Grid.Row="4"  VerticalAlignment="Center" Height="25"
+                  Grid.Row="2" Grid.ColumnSpan="4" Height="14" IsChecked="True" Command="{Binding ShowWarning}" />
+        <Button IsDefault="True" Content="Построить модель" Background="WhiteSmoke" Grid.Row="3"  VerticalAlignment="Center" Height="25"
                 Margin="0,0,7,0" Grid.ColumnSpan="3" HorizontalAlignment="Center"
                 Command="{Binding BuildHoltWintersModel}"
                 CommandParameter="{Binding ElementName=HoltWintersModel}"/>

@@ -22,13 +22,8 @@ namespace TimeSeriesForecasting.ModelBuilding
         public TypeModelEnum TypeModel { get; set; }
         public XGBoostModelParameters ModelParamData { get; set; }
 
-        //public ModelParams(string name, TypeModelEnum type)
-        //{
-        //    Name = name;
-        //    CreatedDate = DateTime.Now;
-        //    TypeModel = type;
-            
-        //}
+       
+        
     }
     public class HoltWintersModelParams
     {
@@ -37,6 +32,8 @@ namespace TimeSeriesForecasting.ModelBuilding
         public TypeModelEnum TypeModel { get; set; }
         public HoltWintersModelParameters ModelParamData { get; set; }
 
+
+      
         //public ModelParams(string name, TypeModelEnum type)
         //{
         //    Name = name;
@@ -66,51 +63,75 @@ namespace TimeSeriesForecasting.ModelBuilding
             _pythonManager = pythonManager;
             _modelParamsReader = modelParamsReader;
         }
+        public event Action ONConnectionStatusChanged;
+
         public async void Create(TimeSeriesData data)
         {
-            //var thread = new Thread(() => _createThread(data));//создаем поток с анонимным делегатом
-            //thread.Start();
-
             await _createThread(data);
-            //ProcessStartInfo startInfo = new ProcessStartInfo("script2.bat");
-            ////startInfo.WorkingDirectory = Path.GetDirectoryName(startInfo.FileName);
-            //Process.Start(startInfo);
-            //// PythonManager _pythonManager = new PythonManager();
-            //_pythonManager.Send<TimeSeriesData>(data);
-            //var param = _pythonManager.Receive<HoltWintersModelParameters>();
-            ////JsonFileWorker fileWorker = new JsonFileWorker();
-            //_fileWorker.Save(param, _dbContext.SelectedObject + ".json");
-            //MessageBox.Show(param.alpha.ToString() + " " + param.betta + " " + param.gamma);
         }
 
         private async Task _createThread(TimeSeriesData data)
         {
-            //ProcessStartInfo startInfo = new ProcessStartInfo("script2.bat");
-            //Process.Start(startInfo);
-            //Thread.Sleep(5000);
-            ////startInfo.WorkingDirectory = Path.GetDirectoryName(startInfo.FileName);
-           
-            //if (_pythonManager.Process is null || _pythonManager.Process.HasExited)
-            //    _pythonManager.Process = Process.Start(startInfo);
-            _pythonManager.Send<TimeSeriesData>(data);
-            //var param = await _pythonManager.Receive<HoltWintersModelParameters>();
-            var param = await Task.Run(() => _pythonManager.Receive<HoltWintersModelParameters>());
-          if (param.model_created)
+            try
             {
-                var name = _dbContext.SelectedObject; //todo: ask user for model name
-                //var fileData = new ModelParams(name, TypeModelEnum.HoltWinters, param);
-                //{
-                //    ModelParamData = param,
-                //};
+                if (data.Points.Count > 0)
+                {
+                    if (_pythonManager.Process is null || _pythonManager.Process.HasExited)
+                    _pythonManager.Process = Process.Start(startInfo);
+                    _pythonManager.Send<TimeSeriesData>(data);
 
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Models", TypeModelEnum.HoltWinters.ToString(), _dbContext.SelectedObject + Guid.NewGuid() + ".json");
-                _fileWorker.Save(param, filePath);
-                MessageBox.Show(param.alpha.ToString() + " " + param.betta + " " + param.gamma);
+                    _dbContext.ConnectionStatus = "Данные успешно отправлены. Ожидание ответа...";
+                }
+                else
+                {
+                    _dbContext.ConnectionStatus = "При отправке возникла ошибка. Стек данных пуст.";
+                }
             }
-            else
+            catch (Exception e)
             {
-                MessageBox.Show(param.model_created.ToString());
+               MessageBox.Show(e.ToString());
+                _dbContext.ConnectionStatus = "При отправке возникла ошибка";
             }
+            ONConnectionStatusChanged?.Invoke();
+            try
+            {
+              
+
+                var param = await Task.Run(() => _pythonManager.Receive<HoltWintersModelParameters>());
+                if (param.model_created)
+                {
+                    var name = _dbContext.SelectedObject; //todo: ask user for model name
+                    var fileData = new HoltWintersModelParams()
+                    {
+                        Name = name,
+                        ModelParamData = param,
+                        CreatedDate = DateTime.Now,
+                        TypeModel = TypeModelEnum.HoltWinters,
+                    };
+
+
+                    var folder = Path.Combine(Directory.GetCurrentDirectory(), "Models", TypeModelEnum.HoltWinters.ToString());
+                    _fileWorker.CheckingFolder(folder);
+
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Models", TypeModelEnum.HoltWinters.ToString(), _dbContext.SelectedObject + Guid.NewGuid() + ".json");
+
+
+                    _fileWorker.Save(fileData, filePath);
+                    MessageBox.Show("Модель сохранена");
+                    _dbContext.ConnectionStatus = "Модель Хольта-Винтерса сохранена";
+                    
+                }
+                else
+                {
+                    _dbContext.ConnectionStatus = "При создании модели Хольта-Винтерса возникли ошибки";
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString());
+                _dbContext.ConnectionStatus = "При создании модели Хольта-Винтерса возникли ошибки";
+            }
+            ONConnectionStatusChanged();
         }
 
        
@@ -144,30 +165,74 @@ namespace TimeSeriesForecasting.ModelBuilding
             ////startInfo.WorkingDirectory = Path.GetDirectoryName(startInfo.FileName);
             //Process.Start(startInfo);
 
+            bool? res = false;
+            try
+            {
+
+                
+
+                var modelParams = _modelParamsReader.GetAllModelParams<HoltWintersModelParams>(Directory.GetCurrentDirectory(), TypeModelEnum.HoltWinters);
+
+                var (vm, window) = _viewManager.GetWindow<ModelParamsHWSelectorVM, ModelParamsHWSelectorWindow>();
+                vm.ModelParamsSource = modelParams;
+                res = window.ShowDialog();
+
+                if (res == true && _dbContext.TimeSeriesData.Points.Count > 0)
+                {
+                    if (_pythonManager.Process is null || _pythonManager.Process.HasExited)
+                        _pythonManager.Process = Process.Start(startInfo);
+                    
+
+                    var HoltWintersParam = vm.ModelParamData.ModelParamData;
+                    HoltWintersParam.Data = _dbContext.TimeSeriesData;
+                    HoltWintersParam.SeriesType = SeriesType.ForecastingHoltWinters;
+                    HoltWintersParam.ScalingFactor = _dbContext.ScalingFactorHoltWinters;
+                    HoltWintersParam.PlotBrawser = _dbContext.PlotBrawser;
+                    //var modelParams = _modelParamsReader.GetAllModelParams(Directory.GetCurrentDirectory(),  TypeModelEnum.HoltWinters);
+                    //var (vm, window) = _viewManager.GetWindow<ModelParamsSelectorVM, ModelParamsSelectorWindow>();
+                    //vm.ModelParamsSource = modelParams.ToList();
+                    // var res = window.ShowDialog();
+
+                    //var winterParam = vm.ModelParamData.ModelParamData as HoltWintersModelParameters;
+                    //    string fullPath1 = Path.Combine(Directory.GetCurrentDirectory(), "Models", "HoltWinters",
+                    //"S01N00145U001N01D0035N01PAI____PI00a8a130cc-cc01-480f-970f-bf6fffb48e8f.json");
+                    //var winterParam = _fileWorker.Read<HoltWintersModelParameters>(fullPath1,
+                    //    "");
+                    //var t = new AnalysisDataSend(winterParam, data, _dbContext.ScalingFactorHoltWinters);
+                    _pythonManager.Send<HoltWintersModelParameters>(HoltWintersParam);
+                    _dbContext.ConnectionStatus = "Данные для анализа успешно отправлены. Ожидание ответа...";
+                    ONConnectionStatusChanged?.Invoke();
+                }
+                else
+                {
+                    _dbContext.ConnectionStatus = "Данные отправить не удалось";
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString());
+                _dbContext.ConnectionStatus = "Данные отправить не удалось";
+                ONConnectionStatusChanged();
+            }
+           // PlotData _tempdata;
+            try
+            {
+                var analysis_data = await Task.Run(() => _pythonManager.Receive<MyClassDto>());
+                var _tempData = PlotData.FromDto(analysis_data);
+                _dbContext.ConnectionStatus = "Данные получены";
+                ONConnectionStatusChanged?.Invoke();
+                return await Task.FromResult(_tempData);
+            }
+            catch (Exception e)
+            {
+                _dbContext.ConnectionStatus = "Данные для анализа успешно отправлены. Ожидание ответа...";
+                ONConnectionStatusChanged?.Invoke();
+                MessageBox.Show(e.ToString());
+
+            }
 
 
-            //if (_pythonManager.Process is null || _pythonManager.Process.HasExited)
-            //    _pythonManager.Process = Process.Start(startInfo);
-
-
-
-            //var modelParams = _modelParamsReader.GetAllModelParams(Directory.GetCurrentDirectory(),  TypeModelEnum.HoltWinters);
-            //var (vm, window) = _viewManager.GetWindow<ModelParamsSelectorVM, ModelParamsSelectorWindow>();
-            //vm.ModelParamsSource = modelParams.ToList();
-            // var res = window.ShowDialog();
-
-            //var winterParam = vm.ModelParamData.ModelParamData as HoltWintersModelParameters;
-            string fullPath1 = Path.Combine(Directory.GetCurrentDirectory(), "Models", "HoltWinters",
-                "S01N00145U001N01D0035N01PAI____PI00a8a130cc-cc01-480f-970f-bf6fffb48e8f.json");
-            var winterParam = _fileWorker.Read<HoltWintersModelParameters>(fullPath1,
-                "");
-            var t = new AnalysisDataSend(winterParam, data, _dbContext.ScalingFactorHoltWinters);
-            _pythonManager.Send<AnalysisDataSend>(t);
-
-            var analysis_data = await Task.Run(() => _pythonManager.Receive<MyClassDto>());
-            var _tempData = PlotData.FromDto(analysis_data);
-
-            return await Task.FromResult(_tempData);
+            return await Task.FromResult(new PlotData());
 
         }
     }
@@ -179,6 +244,17 @@ namespace TimeSeriesForecasting.ModelBuilding
         public double betta { get; set; }
         public double gamma { get; set; }
         public int season_len { get; set; }
+        public TimeSeriesData Data { get; set; }
+        public SeriesType SeriesType { get; set; }
+        public float ScalingFactor { get; set; }
+        public bool PlotBrawser { get; set; }
+        public override string ToString()
+        {
+            return $"Название объекта: {Name}; alpha: {alpha};betta: {betta};gamma: {gamma}; Длина сезона: {season_len}";
+        }
+
+
+
     }
 
     public class AnalysisDataSend

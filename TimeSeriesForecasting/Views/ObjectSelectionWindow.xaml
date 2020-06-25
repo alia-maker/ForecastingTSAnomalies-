@@ -6,7 +6,7 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:local="clr-namespace:TimeSeriesForecasting.Views"
         xmlns:vm="clr-namespace:TimeSeriesForecasting.ViewModels"
-        x:Name="ImportWimdow"
+        x:Name="ImportWindow"
         mc:Ignorable="d"
         Title="Выбор объекта" Height="180" Width="410">
    
@@ -17,7 +17,7 @@
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding OnLoad}"
-                                   CommandParameter="{Binding ElementName=ImportWimdow}"/>
+                                   CommandParameter="{Binding ElementName=ImportWindow}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
     
@@ -58,7 +58,7 @@
         </StackPanel>
         <Button Name="LoadDataObjectButton" Content="Выбрать" Background="WhiteSmoke" Grid.Row="3" Grid.Column="2" 
                 Command="{Binding LoadObjectData}" Margin="3,1,3,1"  
-                CommandParameter="{Binding ElementName=ImportWimdow}"
+                CommandParameter="{Binding ElementName=ImportWindow}"
                 />
         <!--<DatePicker BorderThickness="1" Grid.Row="3" Grid.Column="0" 
                     SelectedDate="{Binding Begin, Mode=TwoWay}"

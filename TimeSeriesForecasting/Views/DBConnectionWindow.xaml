@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:TimeSeriesForecasting.Views"
         xmlns:vm="clr-namespace:TimeSeriesForecasting.ViewModels"
         mc:Ignorable="d"
-        Title="Соединение с базой данных" Width="350" Height="250">
+        Name="DBConnection"
+        Title="Соединение с базой данных" Width="393" Height="410">
 
     <Window.DataContext>
         <vm:DBConnectionWindowViewModel/>
@@ -19,8 +20,8 @@
         </StackPanel>  -->
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*" />
-                <ColumnDefinition Width="4*" />
+                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="5*" />
             </Grid.ColumnDefinitions>
 
             <Grid.RowDefinitions>
@@ -29,6 +30,13 @@
                 <RowDefinition Height="1*" />
                 <RowDefinition Height="1*" />
                 <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+                
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" Padding="5" Grid.ColumnSpan="2" TextWrapping="Wrap"
                        Text="Для подключения к данным SQL Server укажите следующие параметры:" />
@@ -36,18 +44,55 @@
             <Label Grid.Row="1" Grid.Column="0" Content="Имя сервера:" />
             <TextBox Name="serverName" VerticalContentAlignment="Center" Grid.Row="1" Grid.Column="1" Margin="2" Text="{Binding DataSource, Mode=TwoWay}" ></TextBox>
 
-            <Label Grid.Row="2" Grid.Column="0" Content="База данных:" />
-            <TextBox VerticalContentAlignment="Center" Grid.Row="2" Grid.Column="1" Margin="2" x:Name="dbname" Text="{Binding InitialCatalog, Mode=TwoWay}" />
+            <Label Grid.Row="2" Grid.Column="0" Content="Проверка подлинности:" />
+            <!--<TextBox VerticalContentAlignment="Center" Grid.Row="2" Grid.Column="1" Margin="2" x:Name="dbname" Text="{Binding InitialCatalog, Mode=TwoWay}" />-->
+            <ComboBox IsEditable="True" ItemsSource="{Binding AllAuthenticationTypes}" Margin="2" Grid.Row="2" Grid.Column="1"
+                  Text="{Binding SelectedAuthenticationType}"  VerticalContentAlignment="Center"/>
+            <Label Grid.Row="5" Grid.Column="0" Content="База данных:" />
+            <TextBox VerticalContentAlignment="Center" Grid.Row="5" Grid.Column="1" Margin="2" Text="{Binding InitialCatalog, Mode=TwoWay}" />
 
+            <Label Content="Имя пользователя:" Grid.Row="3" Grid.Column="0" IsEnabled="{Binding NameEnable}" />
+            <TextBox VerticalContentAlignment="Center" Grid.Row="3" Grid.Column="1" Margin="2" x:Name="username" Text="{Binding UserID, Mode=TwoWay}" IsEnabled="{Binding NameEnable}" />
 
-            <Label Content="Имя пользователя:" Grid.Row="3" Grid.Column="0" />
-            <TextBox VerticalContentAlignment="Center" Grid.Row="3" Grid.Column="1" Margin="2" x:Name="username" Text="{Binding UserID, Mode=TwoWay}" />
-
-
-            <Label Content="Пароль:" Grid.Row="4" Grid.Column="0" />
+            <Label Content="Пароль:" Grid.Row="4" Grid.Column="0" IsEnabled="{Binding NameEnable}"/>
             <TextBox VerticalContentAlignment="Center" Grid.Row="4" Grid.Column="1" Margin="2" x:Name="password"
-                     Text="{Binding Password, Mode=TwoWay}" />
+                     Text="{Binding Password, Mode=TwoWay}" IsEnabled="{Binding NameEnable}"/>
 
+            <Label Content="Имя таблицы:" Grid.Row="7" Grid.Column="0" IsEnabled="{Binding ConnectEnable}"/>
+            <ComboBox VerticalContentAlignment="Center" Grid.Row="7" Grid.Column="1" Margin="2" 
+                     ItemsSource="{Binding TableNames}"
+                     Text="{Binding CurrentTableName}"
+                     IsEnabled="{Binding ConnectEnable}"
+                      IsEditable="True"/>
+
+            <Label Content="Поле имени тега:" Grid.Row="8" Grid.Column="0" IsEnabled="{Binding ConnectEnable}"/>
+            <ComboBox VerticalContentAlignment="Center" Grid.Row="8" Grid.Column="1" Margin="2" 
+                      ItemsSource="{Binding ColumnNames}"
+                     Text="{Binding CurrentColumnNameTag}"
+                     IsEnabled="{Binding ConnectEnable}"
+                      IsEditable="True"/>
+
+            <Label Content="Поле метки времени:" Grid.Row="9" Grid.Column="0" IsEnabled="{Binding ConnectEnable}"/>
+            <ComboBox VerticalContentAlignment="Center" Grid.Row="9" Grid.Column="1" Margin="2" 
+                      ItemsSource="{Binding ColumnNames}"
+                     Text="{Binding CurrentColumnNameTimestamp}"
+                     IsEnabled="{Binding ConnectEnable}" 
+                      IsEditable="True"/>
+
+            <Label Content="Поле значений:" Grid.Row="10" Grid.Column="0" IsEnabled="{Binding ConnectEnable}" />
+            <ComboBox VerticalContentAlignment="Center" Grid.Row="10" Grid.Column="1" Margin="2" 
+                     ItemsSource="{Binding ColumnNames}"
+                     Text="{Binding CurrentColumnNameValue}"
+                     IsEnabled="{Binding ConnectEnable}" 
+                      IsEditable="True"/>
+            
+            <!--<PasswordBox VerticalContentAlignment="Center" Grid.Row="5" Grid.Column="1" Margin="2" x:Name="password"
+                      IsEnabled="{Binding NameEnable}"
+                         />-->
+            <Button Content="Соединить" Grid.Row="6" Grid.ColumnSpan="2" Background="WhiteSmoke" 
+                    HorizontalAlignment="Center" Padding="5" Margin="5"  Width="75"
+                    Command="{Binding CreateConnection}"
+                    CommandParameter="{Binding ElementName=DBConnection}"/>
         </Grid>
         <!-- <RadioButton x:Name="radiobutton1" Content="Windows аутентификация" Checked="RadioButton_Checked"/> -->
         <!-- <RadioButton x:Name="radiobutton2" Content="Sql server аутентификация" Checked="Radiobutton2_Checked"/> -->
@@ -64,8 +109,12 @@
 
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15,0,0">
-            <Button Content="Проверка" Background="WhiteSmoke" HorizontalAlignment="Center" Padding="5" Margin="5" Command="{Binding CheckConnection}" />
-            <Button Content="Соединить" Background="WhiteSmoke" HorizontalAlignment="Center" Padding="5" Margin="5" Command="{Binding CreateConnection}" />
+            
+            <Button Content="Выбрать" Background="WhiteSmoke" HorizontalAlignment="Center" 
+                    Width="75"
+                    Padding="5" Margin="5" 
+                    Command="{Binding CheckingSelectedFields}"
+                    CommandParameter="{Binding ElementName=DBConnection}"/>
         </StackPanel>
     </StackPanel>
 </Window>
